@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Little League Playbook</title>
+<style>
+  :root {
+    --bg: #f6f7f5;
+    --card-bg: #ffffff;
+    --text: #1c2321;
+    --text-dim: #5b655f;
+    --border: #dfe3df;
+    --accent: #2f6d3c;
+    --accent-dim: #eaf3ec;
+    --infield: #c9995c;
+    --grass: #7fae6f;
+    --grass-dark: #6f9f60;
+    --ball-path: #d9761a;
+    --move-path: #2b6cb0;
+    --runner-path: #c0392b;
+    --chip-bg: #eef1ee;
+    --shadow: 0 1px 2px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141815;
+      --card-bg: #1d2320;
+      --text: #eef1ee;
+      --text-dim: #a7b0a9;
+      --border: #2c332e;
+      --accent: #6fbf7e;
+      --accent-dim: #223228;
+      --infield: #8a6539;
+      --grass: #355c37;
+      --grass-dark: #2c4d2e;
+      --ball-path: #e2924a;
+      --move-path: #6ea8dc;
+      --runner-path: #e07362;
+      --chip-bg: #232b26;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141815;
+    --card-bg: #1d2320;
+    --text: #eef1ee;
+    --text-dim: #a7b0a9;
+    --border: #2c332e;
+    --accent: #6fbf7e;
+    --accent-dim: #223228;
+    --infield: #8a6539;
+    --grass: #355c37;
+    --grass-dark: #2c4d2e;
+    --ball-path: #e2924a;
+    --move-path: #6ea8dc;
+    --runner-path: #e07362;
+    --chip-bg: #232b26;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.25);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100%;
+  }
+  header {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 6px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+  .brand h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
+  .brand span.sub { display: block; font-size: 12px; color: var(--text-dim); font-weight: 400; }
+  .tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 18px 12px;
+    max-width: 1080px;
+    margin: 0 auto;
+    scrollbar-width: thin;
+  }
+  .tabs::-webkit-scrollbar { height: 5px; }
+  .tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .tab-btn {
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: var(--chip-bg);
+    color: var(--text);
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { border-color: var(--accent); }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  main { max-width: 1080px; margin: 0 auto; padding: 20px 18px 60px; }
+  .intro {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .intro h2 { margin: 0 0 6px; font-size: 19px; }
+  .intro p { margin: 6px 0; color: var(--text-dim); font-size: 14.5px; line-height: 1.55; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12.5px; color: var(--text-dim);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 22px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-diagram {
+    background: var(--grass);
+    padding: 8px;
+    position: relative;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card-diagram svg { display: block; width: 100%; height: auto; }
+  .play-hint {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    pointer-events: none;
+    letter-spacing: 0.02em;
+  }
+  .card-body { padding: 14px 16px 16px; }
+  .card-tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 15.5px; line-height: 1.3; }
+  .card p.desc { margin: 0 0 10px; font-size: 13.5px; color: var(--text-dim); line-height: 1.5; }
+  .card ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.6; color: var(--text); }
+  .card ul li { margin-bottom: 2px; }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin: 22px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 10px 0 30px;
+  }
+  @media (max-width: 480px) {
+    .brand h1 { font-size: 15.5px; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <marker id="arrow-ball" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ball-path)"></path>
+    </marker>
+    <marker id="arrow-move" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--move-path)"></path>
+    </marker>
+    <marker id="arrow-runner" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--runner-path)"></path>
+    </marker>
+  </defs>
+</svg>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-mark">&#9918;</div>
+      <div>
+        <h1>Little League Playbook</h1>
+        <span class="sub">Where to go, what to do &mdash; every position, every play</span>
+      </div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+
+<main>
+  <div class="intro" id="intro">
+    <h2 id="intro-title">Welcome to the Playbook</h2>
+    <p id="intro-text"></p>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--ball-path); border-top:2px dashed var(--ball-path); height:0;"></span> Ball path</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--move-path);"></span> Fielder movement</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--runner-path);"></span> Base runner</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--accent);"></span> Position in focus</div>
+    </div>
+  </div>
+  <div id="content"></div>
+</main>
+
+<footer>Positioning basics for youth baseball &middot; assignments can vary by coach and league &mdash; use this as a starting point and follow your team's calls.</footer>
+
+<script>
+/* ---------- Field geometry (600x600 canvas, home at bottom) ---------- */
+const BAG = { H: [300, 560], "1B": [432, 428], "2B": [300, 296], "3B": [168, 428] };
+const POS = {
+  P:  [300, 412],
+  C:  [300, 542],
+  "1B": [408, 396],
+  "2B": [344, 336],
+  "3B": [196, 396],
+  SS: [258, 336],
+  LF: [104, 168],
+  CF: [300, 84],
+  RF: [496, 168],
+};
+// helper spots used for cutoffs / covers that aren't a fielder's home spot
+const SPOT = {
+  CUT_HOME_L: [232, 340],
+  CUT_HOME_C: [300, 300],
+  CUT_HOME_R: [372, 340],
+  CUT_3B: [236, 372],
+  SHALLOW_LF: [190, 260],
+  SHALLOW_CF: [300, 200],
+  SHALLOW_RF: [412, 260],
+};
+function xy(k){
+  if (Array.isArray(k)) return k;
+  if (BAG[k]) return BAG[k];
+  if (POS[k]) return POS[k];
+  if (SPOT[k]) return SPOT[k];
+  return [300,400];
+}
+
+const POSITION_LABELS = { P:"Pitcher", C:"Catcher", "1B":"1st Base", "2B":"2nd Base", "3B":"3rd Base", SS:"Shortstop", LF:"Left Field", CF:"Center Field", RF:"Right Field" };
+
+/* ---------- SVG field + arrow drawing ---------- */
+function fieldBase(){
+  return `
+  <rect x="0" y="0" width="600" height="600" fill="var(--grass)"/>
+  <path d="M 300 560 L 40 300 A 370 370 0 0 1 560 300 Z" fill="var(--grass-dark)" opacity="0.35"/>
+  <path d="M 300 560 L 432 428 L 300 296 L 168 428 Z" fill="var(--infield)"/>
+  <line x1="300" y1="560" x2="40" y2="300" stroke="#fff" stroke-width="2" opacity="0.6"/>
+  <line x1="300" y1="560" x2="560" y2="300" stroke="#fff" stroke-width="2" opacity="0.6"/>
+  <circle cx="300" cy="412" r="16" fill="var(--infield)" stroke="#fff" stroke-width="1.5" opacity="0.9"/>
+  <rect x="292" y="552" width="16" height="16" fill="#fff" opacity="0.9"/>
+  <rect x="424" y="420" width="16" height="16" fill="#fff" opacity="0.9" transform="rotate(45 432 428)"/>
+  <rect x="292" y="288" width="16" height="16" fill="#fff" opacity="0.9" transform="rotate(45 300 296)"/>
+  <rect x="160" y="420" width="16" height="16" fill="#fff" opacity="0.9" transform="rotate(45 168 428)"/>
+  `;
+}
+function fielderDots(highlightKeys, moveMap){
+  const hl = new Set(highlightKeys || []);
+  moveMap = moveMap || {};
+  let s = '';
+  for (const k of Object.keys(POS)){
+    const [x,y] = POS[k];
+    const isHl = hl.has(k);
+    const mv = moveMap[k];
+    const r = isHl ? 15 : 11;
+    const fill = isHl ? 'var(--accent)' : '#ffffff';
+    const stroke = isHl ? '#ffffff' : '#3a3a3a';
+    const sw = isHl ? 2.5 : 1.5;
+    let pulse = '';
+    if (!mv && isHl){
+      pulse = `<animate attributeName="r" values="${r-1};${r+3};${r-1}" dur="1.7s" begin="indefinite" repeatCount="2" data-phase="ball"/>
+        <animate attributeName="opacity" values="1;0.75;1" dur="1.7s" begin="indefinite" repeatCount="2" data-phase="ball"/>`;
+    }
+    let motion = '';
+    if (mv){
+      const d = deltaPathD([x,y], mv.to, mv.curve);
+      motion = `<animateMotion dur="${mv.dur || '1.1s'}" begin="indefinite" repeatCount="1" fill="freeze" path="${d}" data-phase="move"/>`;
+    }
+    s += `<g>
+      <circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" opacity="${isHl?1:0.85}">${pulse}</circle>
+      <text x="${x}" y="${y+4}" text-anchor="middle" font-size="${isHl?12:10}" font-weight="700" fill="${isHl?'#ffffff':'#2a2a2a'}" style="pointer-events:none">${k}</text>
+      ${motion}
+    </g>`;
+  }
+  return s;
+}
+function pathD(from, to, curve){
+  const [x1,y1] = xy(from), [x2,y2] = xy(to);
+  if (curve){
+    const mx = (x1+x2)/2 + curve, my = (y1+y2)/2;
+    return `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
+  }
+  return `M ${x1} ${y1} L ${x2} ${y2}`;
+}
+// same path, but re-based at (0,0) -- needed to animate an element (like a circle
+// with cx/cy already set) via animateMotion without it jumping on the first frame
+function deltaPathD(from, to, curve){
+  const [x1,y1] = xy(from), [x2,y2] = xy(to);
+  const dx = x2-x1, dy = y2-y1;
+  if (curve){
+    const mx = dx/2 + curve, my = dy/2;
+    return `M 0 0 Q ${mx} ${my} ${dx} ${dy}`;
+  }
+  return `M 0 0 L ${dx} ${dy}`;
+}
+// a small traveling baseball (white w/ red stitches) along a path -- phase defaults
+// to "ball" (the pitch/hit, plays first); pass "throw" for a follow-up throw that
+// should play after fielders/runners have already moved (e.g. a relay throw)
+function travelingBall(d, dur, phase){
+  return `<g>
+    <animateMotion dur="${dur}" begin="indefinite" repeatCount="1" fill="freeze" rotate="auto" path="${d}" data-phase="${phase || 'ball'}"/>
+    <circle r="7.5" fill="#fdfaf2" stroke="#8a2f22" stroke-width="1.3"/>
+    <path d="M -4 -3 Q 0 -1 -4 1" stroke="#8a2f22" stroke-width="1" fill="none"/>
+    <path d="M 4 -3 Q 0 -1 4 1" stroke="#8a2f22" stroke-width="1" fill="none"/>
+  </g>`;
+}
+// the base runner itself, sliding from the base it starts on to the base it ends on --
+// "move" phase: it waits for the ball's flight to finish before it starts
+function runnerMover(from, to, curve, dur){
+  const [sx,sy] = xy(from);
+  const d = deltaPathD(from, to, curve);
+  return `<g>
+    <circle cx="${sx}" cy="${sy}" r="7" fill="var(--runner-path)" stroke="#fff" stroke-width="1.5"/>
+    <animateMotion dur="${dur || '1.2s'}" begin="indefinite" repeatCount="1" fill="freeze" path="${d}" data-phase="move"/>
+  </g>`;
+}
+function diagram(cfg){
+  let track = '';   // guide lines + arrowheads -- hidden (opacity 0) until their phase plays
+  let travel = '';  // the ball + runner markers (drawn last, on top)
+
+  if (cfg.ball){
+    const d = pathD(cfg.ball.from || 'H', cfg.ball.to, cfg.ball.curve);
+    track += `<path class="track" data-phase="ball" d="${d}" fill="none" stroke="var(--ball-path)" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#arrow-ball)" opacity="0"/>`;
+    travel += travelingBall(d, cfg.ball.dur || "1.4s", 'ball');
+  }
+  (cfg.runners||[]).forEach(r => {
+    const d = pathD(r.from, r.to, r.curve);
+    track += `<path class="track" data-phase="move" d="${d}" fill="none" stroke="var(--runner-path)" stroke-width="3" stroke-dasharray="2 5" marker-end="url(#arrow-runner)" opacity="0"/>`;
+    travel += runnerMover(r.from, r.to, r.curve, r.dur);
+  });
+  const moveMap = {};
+  (cfg.moves||[]).forEach(m => {
+    const fromXY = POS[m.from] || xy(m.from); // always the fielder's own spot, never the bag of the same name
+    const d = pathD(fromXY, m.to, m.curve);
+    track += `<path class="track" data-phase="move" d="${d}" fill="none" stroke="var(--move-path)" stroke-width="3" marker-end="url(#arrow-move)" opacity="0"/>`;
+    moveMap[m.from] = { to: m.to, curve: m.curve, dur: m.dur };
+  });
+  if (cfg.throw){
+    const d = pathD(cfg.throw.from || 'H', cfg.throw.to, cfg.throw.curve);
+    track += `<path class="track" data-phase="throw" d="${d}" fill="none" stroke="var(--ball-path)" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#arrow-ball)" opacity="0"/>`;
+    travel += travelingBall(d, cfg.throw.dur || "1.1s", 'throw');
+  }
+
+  // fielder circles are drawn AFTER the runner/ball travel markers are queued but
+  // BEFORE they're appended, so the fielders sit under the ball visually
+  const body = fieldBase() + track + fielderDots(cfg.highlight, moveMap) + travel;
+  return `<svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+}
+
+/* ---------- Scenario data ---------- */
+const DATA = {};
+
+DATA.P = {
+  label: "Pitcher",
+  intro: "After the pitch, the pitcher becomes a fifth infielder. Main jobs: field balls hit back through the middle, cover home or first when needed, and back up throws.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Comebacker to the mound",
+      diagram: diagram({ highlight:["P"], ball:{to:"P"}, runners:[{from:"H", to:"1B"}], throw:{from:"P", to:"1B"} }),
+      desc: "A grounder or line drive is hit right back at you.",
+      points: ["Field it with two hands, square up to the target", "Check the lead runner before throwing", "Usually throw to 1B unless there's a force at another base"]
+    },
+    {
+      tag: "Ball hit to the infield",
+      title: "Cover first base",
+      diagram: diagram({ highlight:["P"], ball:{to:[375,362]}, moves:[{from:"P", to:"1B"},{from:"1B", to:[375,362]}], runners:[{from:"H", to:"1B"}], throw:{from:[375,362], to:"1B"} }),
+      desc: "Grounder pulls the 1st baseman off the bag toward 2nd or into foul ground.",
+      points: ["Sprint toward the 1B line as soon as the ball is hit to that side", "Angle in from the infield grass, not straight up the line", "Take the throw with your foot on the inside edge of the bag, facing the thrower"]
+    },
+    {
+      tag: "Bunt",
+      title: "Charging a bunt up the middle",
+      diagram: diagram({ highlight:["P"], ball:{to:[300,480]}, moves:[{from:"P", to:[300,480]}], runners:[{from:"H", to:"1B"}], throw:{from:[300,480], to:"1B"} }),
+      desc: "A bunt rolls out in front of the plate, between you and the catcher.",
+      points: ["Call it loudly (\"I got it!\") so the catcher backs off", "Field with bare hand if it's slow and rolling, glove if it has pace", "Look the lead runner back before throwing"]
+    },
+    {
+      tag: "Backing up",
+      title: "Back up throws to 3rd or home",
+      diagram: diagram({ highlight:["P"], ball:{to:"CF"}, moves:[{from:"P", to:[148,480]}], runners:[{from:"1B", to:"3B"}], throw:{from:"CF", to:"3B", curve:-30} }),
+      desc: "A ball is hit to center field with a runner trying to reach third.",
+      points: ["Drift behind the base the throw is going to, in line with the throw", "Stay 15-20 feet back so an overthrow doesn't get past you too", "Never turn your back on the play"]
+    },
+    {
+      tag: "Runner on 3rd",
+      title: "Cover home on a wild pitch or passed ball",
+      diagram: diagram({ highlight:["P"], ball:{from:"P", to:[300,595]}, moves:[{from:"P", to:"H"},{from:"C", to:[300,595]}], runners:[{from:"3B", to:"H"}], throw:{from:[300,595], to:"H"} }),
+      desc: "Ball gets away from the catcher with a runner on third.",
+      points: ["Sprint to cover home plate the moment the ball gets past the catcher", "Straddle the front of the plate facing the catcher", "Give a clear low target for the throw"]
+    }
+  ]
+};
+
+DATA.C = {
+  label: "Catcher",
+  intro: "The catcher can see the whole field and organizes the defense out loud. Main jobs: control bunts, protect home plate, and call out where throws should go.",
+  cards: [
+    {
+      tag: "Bunt",
+      title: "Fielding a bunt down the line",
+      diagram: diagram({ highlight:["C"], ball:{to:[245,478]}, moves:[{from:"C", to:[245,478]}], runners:[{from:"H", to:"1B"}], throw:{from:[245,478], to:"1B"} }),
+      desc: "A bunt is pushed down the first or third base line.",
+      points: ["Call off the corner infielder if you have the better angle", "Come out of your crouch already turning toward the ball", "Throw from a low, quick position rather than standing all the way up"]
+    },
+    {
+      tag: "Passed ball",
+      title: "Chasing a ball to the backstop",
+      diagram: diagram({ highlight:["C"], ball:{from:"P", to:[300,595]}, moves:[{from:"C", to:[300,595]},{from:"P", to:"H"}], runners:[{from:"3B", to:"H"}], throw:{from:[300,595], to:"H"} }),
+      desc: "A pitch gets past you with a runner on base.",
+      points: ["Locate the ball first, don't just run blindly", "Know before the pitch whether there's a play at any base", "Pitcher should already be covering home for your throw"]
+    },
+    {
+      tag: "Runner on 3rd",
+      title: "Setting up for a play at the plate",
+      diagram: diagram({ highlight:["C"], ball:{to:"LF"}, runners:[{from:"3B", to:"H"}], throw:{from:"LF", to:"H", curve:40} }),
+      desc: "A throw is coming home to try to get a runner tagging or scoring.",
+      points: ["Set up in front of the plate, leaving the runner a lane per your league's plate-collision rules", "Catch first, then apply the tag low and secure", "Call for the cutoff to know if the throw needs to be cut"]
+    },
+    {
+      tag: "Directing the defense",
+      title: "Calling the cutoff and coverage",
+      diagram: diagram({ highlight:["C"], ball:{to:"CF"}, moves:[{from:"1B", to:"CUT_HOME_C"}], runners:[{from:"2B", to:"H"}], throw:{from:"CF", to:"CUT_HOME_C"} }),
+      desc: "On any hit to the outfield, the catcher talks the defense through the play.",
+      points: ["Call out which base the throw should go to", "Tell the cutoff man to cut the ball or let it go", "Remind the pitcher who's covering home"]
+    }
+  ]
+};
+
+DATA["1B"] = {
+  label: "1st Base",
+  intro: "First base is the target for most infield throws. Main jobs: field your zone, hold the bag for throws, and act as cutoff on many throws to home.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a grounder near the bag",
+      diagram: diagram({ highlight:["1B"], ball:{to:"1B"}, moves:[{from:"P", to:"1B"}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A ground ball comes right at you or close enough to field yourself.",
+      points: ["If you can reach the bag before the runner, field it and run to first yourself", "If not, flip or throw underhand to the pitcher covering", "Always know where the pitcher is before you decide"]
+    },
+    {
+      tag: "Ball hit to 2B / SS",
+      title: "Holding the bag for the throw",
+      diagram: diagram({ highlight:["1B"], ball:{to:"SS"}, moves:[{from:"1B", to:"1B"}], runners:[{from:"H", to:"1B"}], throw:{from:"SS", to:"1B"} }),
+      desc: "The ball is fielded by another infielder and thrown to you.",
+      points: ["Get to the inside edge of the bag early", "Give a clear target with your glove", "Stretch toward the throw only once you're sure of the direction"]
+    },
+    {
+      tag: "Ball hit to the outfield",
+      title: "Cutoff man for throws home",
+      diagram: diagram({ highlight:["1B"], ball:{to:"CF"}, moves:[{from:"1B", to:"CUT_HOME_C"}], runners:[{from:"2B", to:"H"}], throw:{from:"CF", to:"CUT_HOME_C", curve:20} }),
+      desc: "A base hit or extra-base hit with a runner trying to score.",
+      points: ["Sprint into the infield grass, in a direct line between the outfielder and home", "Turn to face the outfield with hands up as a target", "Listen for the catcher or pitcher to say \"cut\" or \"let it go\""]
+    },
+    {
+      tag: "Bunt",
+      title: "Charging a bunt to the right side",
+      diagram: diagram({ highlight:["1B"], ball:{to:[350,500]}, moves:[{from:"2B", to:"1B"}], runners:[{from:"H", to:"1B"}], throw:{from:[350,500], to:"1B"} }),
+      desc: "A bunt is placed toward the first base line.",
+      points: ["Charge hard, field with bare hand if it's slow", "Know that 2nd baseman should be covering first base behind you", "Get rid of it quickly if there's a play at first"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up throws to 2nd",
+      diagram: diagram({ highlight:["1B"], moves:[{from:"1B", to:[280,260]}], runners:[{from:"1B", to:"2B"}], throw:{from:"C", to:"2B"} }),
+      desc: "A throw is heading to second base from the catcher or another infielder and you're not involved in the play.",
+      points: ["Drift toward the outfield side of second base", "Only do this when you're not needed at first"]
+    }
+  ]
+};
+
+DATA["2B"] = {
+  label: "2nd Base",
+  intro: "Second base works closely with the shortstop. Main jobs: cover the bag when SS fields the ball, cover first on bunts, and act as cutoff on some throws.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a grounder to the right side",
+      diagram: diagram({ highlight:["2B"], ball:{to:[344,336]}, moves:[{from:"SS", to:"2B"}], runners:[{from:"1B", to:"2B"},{from:"H", to:"1B"}], throw:{from:[344,336], to:"2B"} }),
+      desc: "A ground ball is hit to your side of the infield.",
+      points: ["Field it moving toward first for momentum on the throw", "For a double play, feed the shortstop covering the bag", "Call for the ball early so the 1st baseman knows to hold"]
+    },
+    {
+      tag: "Ball hit to 1B",
+      title: "Covering first base",
+      diagram: diagram({ highlight:["2B"], ball:{to:[408,396]}, moves:[{from:"2B", to:"1B"}], runners:[{from:"H", to:"1B"}], throw:{from:[408,396], to:"1B"} }),
+      desc: "The first baseman fields a grounder and needs someone to cover the bag.",
+      points: ["Break toward first the instant the ball is hit that way", "Approach the bag from the infield side, not straight down the line", "Take the throw with your foot touching the inside of the bag"]
+    },
+    {
+      tag: "Ball hit to SS / 3B",
+      title: "Covering 2nd base",
+      diagram: diagram({ highlight:["2B"], ball:{to:"3B"}, moves:[{from:"2B", to:"2B"}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A grounder to the left side with a runner who might try to advance.",
+      points: ["Move to cover 2nd base for a possible force or steal throw", "Straddle the bag facing the fielder for a clean tag"]
+    },
+    {
+      tag: "Ball hit to LF / CF",
+      title: "Cutoff for throws to 3rd",
+      diagram: diagram({ highlight:["2B"], ball:{to:"LF"}, moves:[{from:"2B", to:"CUT_3B"}], runners:[{from:"1B", to:"3B"}], throw:{from:"LF", to:"CUT_3B", curve:-15} }),
+      desc: "A hit to left-center with a runner trying to stretch it into a triple.",
+      points: ["Whichever middle infielder isn't covering 2nd becomes the cutoff to 3rd", "Line yourself up between the outfielder and 3rd base", "Watch the 3rd baseman for a cut signal"]
+    },
+    {
+      tag: "Bunt",
+      title: "Covering first on a bunt",
+      diagram: diagram({ highlight:["2B"], ball:{to:[350,500]}, moves:[{from:"2B", to:"1B"}], runners:[{from:"H", to:"1B"}], throw:{from:[350,500], to:"1B"} }),
+      desc: "The first baseman charges a bunt, leaving the bag open.",
+      points: ["Sprint to cover first as soon as you read bunt", "Give a low, early target"]
+    }
+  ]
+};
+
+DATA["3B"] = {
+  label: "3rd Base",
+  intro: "Third base guards the \"hot corner\" and the bag for the lead runner. Main jobs: field hard-hit balls, charge bunts, and hold the base for tags and cutoffs.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a hard grounder",
+      diagram: diagram({ highlight:["3B"], ball:{to:[196,396]}, runners:[{from:"H", to:"1B"}], throw:{from:[196,396], to:"1B"} }),
+      desc: "A sharp ground ball is hit right at you.",
+      points: ["Get in front of it with your glove low and out in front", "Throw across the diamond to 1st with a strong, accurate arm", "If a runner is forced at 3rd instead, just touch the bag"]
+    },
+    {
+      tag: "Bunt",
+      title: "Charging a bunt down the line",
+      diagram: diagram({ highlight:["3B"], ball:{to:[245,485]}, moves:[{from:"SS", to:"3B"}], runners:[{from:"H", to:"1B"}], throw:{from:[245,485], to:"1B"} }),
+      desc: "A bunt is placed toward the third base line.",
+      points: ["Charge hard and field with bare hand if needed", "Shortstop should be covering 3rd base behind you", "Check the lead runner before deciding where to throw"]
+    },
+    {
+      tag: "Ball hit elsewhere",
+      title: "Holding the bag with a runner on",
+      diagram: diagram({ highlight:["3B"], ball:{to:"SS"}, runners:[{from:"3B", to:[168,470]},{from:"H", to:"1B"}] }),
+      desc: "The ball is hit to another infielder while a runner is on third.",
+      points: ["Stay near the bag in case of a pickoff or tag play", "Be ready to receive a cutoff throw if the runner strays too far"]
+    },
+    {
+      tag: "Ball hit to LF / CF",
+      title: "Receiving the cutoff throw",
+      diagram: diagram({ highlight:["3B"], ball:{to:"LF"}, moves:[{from:"3B", to:"3B"}], runners:[{from:"1B", to:"3B"}], throw:{from:"CUT_3B", to:"3B"} }),
+      desc: "A base hit to the outfield with a runner trying to reach third.",
+      points: ["Stay at the bag as the target for the cutoff man's relay", "Straddle the bag facing the throw, ready to apply a tag"]
+    }
+  ]
+};
+
+DATA.SS = {
+  label: "Shortstop",
+  intro: "Shortstop covers the most ground in the infield and is the other half of the middle-infield combo with second base. Main jobs: field the left side, cover 2nd or 3rd depending on the play, and act as cutoff on outfield hits.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a grounder in the hole",
+      diagram: diagram({ highlight:["SS"], ball:{to:"SS"}, moves:[{from:"2B", to:"2B"}], runners:[{from:"1B", to:"2B"},{from:"H", to:"1B"}], throw:{from:"SS", to:"2B"} }),
+      desc: "A ground ball is hit to your left or right in the infield.",
+      points: ["Field it and set your feet toward 1st base if possible", "For a double play, feed 2nd baseman covering the bag", "Charge slow rollers aggressively"]
+    },
+    {
+      tag: "Ball hit to 2B",
+      title: "Covering 2nd base",
+      diagram: diagram({ highlight:["SS"], ball:{to:[344,336]}, moves:[{from:"SS", to:"2B"}], runners:[{from:"H", to:"1B"}], throw:{from:[344,336], to:"2B"} }),
+      desc: "The 2nd baseman fields a grounder to their side.",
+      points: ["Break to cover 2nd as soon as the ball is hit that way", "Give an early target and be ready to turn a double play", "Straddle the bag with your body ready to throw to first"]
+    },
+    {
+      tag: "Bunt",
+      title: "Covering 3rd on a bunt",
+      diagram: diagram({ highlight:["SS"], ball:{to:[245,485]}, moves:[{from:"SS", to:"3B"}], runners:[{from:"2B", to:"3B"}], throw:{from:[245,485], to:"3B"} }),
+      desc: "The third baseman charges a bunt, leaving the bag open.",
+      points: ["Sprint to cover 3rd base the moment you read bunt", "Communicate loudly so the 3rd baseman knows you've got it"]
+    },
+    {
+      tag: "Ball hit to LF",
+      title: "Cutoff for throws to 3rd or home",
+      diagram: diagram({ highlight:["SS"], ball:{to:"LF"}, moves:[{from:"SS", to:"CUT_HOME_L"}], runners:[{from:"1B", to:"3B"}], throw:{from:"LF", to:"CUT_HOME_L", curve:-20} }),
+      desc: "A hit to left field with a runner trying to advance multiple bases.",
+      points: ["Line up between left field and the base the throw is going to", "Face the outfielder with your hands up as a target", "Relay quickly and accurately if you're not waved off"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up 2nd and 3rd",
+      diagram: diagram({ highlight:["SS"], moves:[{from:"SS", to:[260,270]}], runners:[{from:"1B", to:"2B"}], throw:{from:"C", to:"2B"} }),
+      desc: "A throw is coming to a base you're not directly involved with.",
+      points: ["Get in line behind the base on the outfield side", "Stay alert on steal attempts and pickoff throws too"]
+    }
+  ]
+};
+
+DATA.LF = {
+  label: "Left Field",
+  intro: "Outfielders are the last line of defense. Main jobs: get to fly balls and grounders quickly, hit the cutoff man, and back up your neighboring fielders.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a ground ball",
+      diagram: diagram({ highlight:["LF"], ball:{to:"LF"}, moves:[{from:"LF", to:[190,260]}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A base hit gets past the infield to left field.",
+      points: ["Charge the ball under control, field it on your glove-side foot", "Come up throwing toward the cutoff man, not wildly across the field", "Hit the cutoff man on a low, hard line"]
+    },
+    {
+      tag: "Ball hit to you",
+      title: "Catching a fly ball",
+      diagram: diagram({ highlight:["LF"], ball:{to:"LF", curve:-30}, runners:[{from:"3B", to:"H"}] }),
+      desc: "A fly ball is hit into your area.",
+      points: ["Call it loudly and early (\"I got it!\")", "Get right behind the ball, not off to the side", "After the catch, be ready for a throw if a runner tags up"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up center field",
+      diagram: diagram({ highlight:["LF"], ball:{to:"CF"}, moves:[{from:"LF", to:[210,140]}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A ball is hit to the center fielder, or a throw is coming back through center.",
+      points: ["Angle in behind and to the side of the center fielder", "Give ground if needed so you're never flat-footed watching"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up 3rd base on a throw",
+      diagram: diagram({ highlight:["LF"], moves:[{from:"LF", to:[130,300]}], runners:[{from:"2B", to:"3B"}], throw:{from:"SS", to:"3B"} }),
+      desc: "An infield throw is going to third base and you're not the cutoff.",
+      points: ["Drift in toward the infield, behind the third baseman", "This only applies when the ball is on your side of the field"]
+    }
+  ]
+};
+
+DATA.CF = {
+  label: "Center Field",
+  intro: "Center field has the most ground to cover and is the captain of the outfield. Main jobs: take charge on balls hit between the corners, back up both left and right, and hit the cutoff man.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Catching a fly ball",
+      diagram: diagram({ highlight:["CF"], ball:{to:"CF", curve:0}, runners:[{from:"3B", to:"H"}] }),
+      desc: "A fly ball is hit to center.",
+      points: ["Call it early and loudly, you have priority over the corner outfielders", "Get behind the ball with time to spare", "Be ready to throw home or to a base if a runner tags"]
+    },
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a ball in the gap",
+      diagram: diagram({ highlight:["CF"], ball:{to:"CF"}, moves:[{from:"CF", to:[300,200]}], runners:[{from:"H", to:"2B"}] }),
+      desc: "An extra-base hit gets past the infield into the gap.",
+      points: ["Get to the ball quickly, then square up to throw", "Hit the cutoff man rather than trying to throw all the way in the air", "Communicate with the corner outfielder chasing the same ball"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up left or right field",
+      diagram: diagram({ highlight:["CF"], ball:{to:"RF"}, moves:[{from:"CF", to:[420,110]}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A ball is hit to either corner outfielder.",
+      points: ["Sprint over behind whichever corner fielder is making the play", "Cover the gap in case the ball is misjudged or gets past them"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up 2nd base",
+      diagram: diagram({ highlight:["CF"], moves:[{from:"CF", to:[300,180]}], runners:[{from:"1B", to:"2B"}], throw:{from:"C", to:"2B"} }),
+      desc: "A throw is heading to second base on a steal or a relay.",
+      points: ["Drift in to be in line behind second base", "You're the only outfielder who can realistically get there in time"]
+    }
+  ]
+};
+
+DATA.RF = {
+  label: "Right Field",
+  intro: "Right field has the shortest throw to third and home of any outfield spot, which is why the arm often matters most here. Main jobs: field your zone, hit the cutoff, and back up first base.",
+  cards: [
+    {
+      tag: "Ball hit to you",
+      title: "Fielding a ground ball",
+      diagram: diagram({ highlight:["RF"], ball:{to:"RF"}, moves:[{from:"RF", to:[412,260]}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A base hit gets through to right field.",
+      points: ["Charge under control and field it on your glove-side foot", "Come up throwing toward the cutoff man", "Your throw to 3rd or home is the shortest of any outfielder, so get it moving"]
+    },
+    {
+      tag: "Ball hit to you",
+      title: "Catching a fly ball",
+      diagram: diagram({ highlight:["RF"], ball:{to:"RF", curve:30}, runners:[{from:"3B", to:"H"}] }),
+      desc: "A fly ball is hit to right field.",
+      points: ["Call it early, get behind the ball", "Know the runner situation before you catch it so you know where to throw"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up first base",
+      diagram: diagram({ highlight:["RF"], moves:[{from:"RF", to:[460,280]}], runners:[{from:"1B", to:[405,398]}], throw:{from:"C", to:"1B"} }),
+      desc: "A throw is coming to first base and you're not directly involved.",
+      points: ["Drift in behind first base on any throw there, especially from the catcher or across the infield", "This is one of the most common overthrow spots to guard"]
+    },
+    {
+      tag: "Backing up",
+      title: "Backing up center field",
+      diagram: diagram({ highlight:["RF"], ball:{to:"CF"}, moves:[{from:"RF", to:[390,140]}], runners:[{from:"H", to:"1B"}] }),
+      desc: "A ball is hit to the center fielder.",
+      points: ["Angle in behind and to the side of the center fielder", "Give ground so you're never caught flat-footed"]
+    }
+  ]
+};
+
+DATA.RUNNING = {
+  label: "Base Running",
+  intro: "Good base running is about reading the ball and reacting the same way every time. A few of your league's specific rules (leadoffs, stealing) may vary by division &mdash; follow your team's rules for those.",
+  cards: [
+    {
+      tag: "Runner on 1st",
+      title: "Ground ball hit anywhere",
+      diagram: diagram({ ball:{to:"SS"}, runners:[{from:"1B", to:"2B"}] }),
+      desc: "You're the runner on first and the batter hits a grounder.",
+      points: ["You're forced to run &mdash; go hard to 2nd no matter where it's hit", "Watch the shortstop or 2nd baseman for a possible tag, but keep going unless you're clearly out", "Get ready to slide if there's a play at 2nd"]
+    },
+    {
+      tag: "Runner on 1st",
+      title: "Fly ball hit anywhere",
+      diagram: diagram({ ball:{to:"CF", curve:0}, runners:[{from:"1B", to:[340,270]}] }),
+      desc: "You're the runner on first and the batter hits a fly ball.",
+      points: ["Take a secondary lead, then watch the ball", "If it's caught, get back and touch 1st before advancing (\"tagging up\")", "If it drops, take off for 2nd immediately"]
+    },
+    {
+      tag: "Runner on 2nd",
+      title: "Ground ball to the right side",
+      diagram: diagram({ ball:{to:"1B"}, runners:[{from:"2B", to:"3B"}] }),
+      desc: "You're on second and the ball is hit to 1st or 2nd base.",
+      points: ["With less than 2 outs, this is often a good chance to advance to 3rd", "The throw usually goes to 1st, giving you time", "Read the fielder's throw before committing"]
+    },
+    {
+      tag: "Runner on 3rd",
+      title: "Fly ball with less than 2 outs",
+      diagram: diagram({ ball:{to:"CF", curve:0}, runners:[{from:"3B", to:"H"}] }),
+      desc: "You're on third and the batter hits a fly ball with fewer than 2 outs.",
+      points: ["Tag up at third and watch the catch", "Sprint home the instant the ball touches the fielder's glove", "This is called a \"sacrifice fly\" if you score"]
+    },
+    {
+      tag: "Runner on 3rd",
+      title: "Ground ball hit anywhere",
+      diagram: diagram({ ball:{to:"2B"}, runners:[{from:"3B", to:"H"}] }),
+      desc: "You're on third and the batter hits a ground ball.",
+      points: ["If it's hit to the right side (1st or 2nd base), you can often score since the throw crosses the whole diamond", "If it's hit to 3rd, the pitcher, or a drawn-in infielder, you may need to hold", "Get a read from your 3rd base coach if you have one"]
+    },
+    {
+      tag: "Runners on 1st & 2nd",
+      title: "Ground ball hit anywhere",
+      diagram: diagram({ ball:{to:"SS"}, runners:[{from:"2B", to:"3B"},{from:"1B", to:"2B"}] }),
+      desc: "You have two runners on and a grounder is hit.",
+      points: ["The lead runner (from 2nd) reads the play first", "The trailing runner (from 1st) reacts to what the lead runner does", "Both of you are forced to run if the ball isn't fielded cleanly for an easy out"]
+    },
+    {
+      tag: "Bases loaded",
+      title: "Ground ball hit anywhere",
+      diagram: diagram({ ball:{to:"3B"}, runners:[{from:"3B", to:"H"},{from:"2B", to:"3B"},{from:"1B", to:"2B"}] }),
+      desc: "Every base is occupied and a grounder is hit.",
+      points: ["Every runner is forced &mdash; everyone must run", "The defense usually has a force play at any base, including home", "Run hard through the base, don't watch the ball"]
+    },
+    {
+      tag: "General",
+      title: "Tagging up on a fly ball",
+      diagram: diagram({ ball:{to:"LF", curve:-30}, runners:[{from:"2B", to:[300,296]}] }),
+      desc: "Any time there's a fly ball and you're on base.",
+      points: ["You may never leave the base early if the ball is caught &mdash; you can be doubled off", "Keep contact with the base until the ball touches the fielder's glove", "Once it's caught, you can advance at your own risk"]
+    }
+  ]
+};
+
+DATA.CUTOFFS = {
+  label: "Cutoffs & Backups",
+  intro: "These are team-wide habits that make every position work together. The general rule: whoever is between the ball and the target base becomes the cutoff; everyone else either covers a base or backs up a throw.",
+  cards: [
+    {
+      tag: "Principle",
+      title: "Who cuts off throws to home",
+      diagram: diagram({ ball:{to:"CF"}, moves:[{from:"1B", to:"CUT_HOME_C"}], runners:[{from:"2B", to:"H"}], throw:{from:"CF", to:"CUT_HOME_C", curve:20} }),
+      desc: "On most outfield hits with a runner trying to score, the first baseman becomes the cutoff man.",
+      points: ["1B sprints to a spot in line between the outfielder and home plate", "The catcher or pitcher calls whether to cut the throw or let it go through", "The pitcher backs up home in case the throw sails past everyone"]
+    },
+    {
+      tag: "Principle",
+      title: "Who cuts off throws to 3rd",
+      diagram: diagram({ ball:{to:"LF"}, moves:[{from:"SS", to:"CUT_3B"}], runners:[{from:"1B", to:"3B"}], throw:{from:"LF", to:"CUT_3B", curve:-15} }),
+      desc: "On a hit to left or center with a runner trying to reach third, the middle infielder who isn't covering the bag becomes the cutoff.",
+      points: ["Usually the shortstop if the 3rd baseman is holding the bag", "Line up between the outfielder and third base", "The left fielder or center fielder backs up the play if the throw skips past"]
+    },
+    {
+      tag: "Principle",
+      title: "Backing up is everyone's job",
+      diagram: diagram({ ball:{to:"1B"}, moves:[{from:"RF", to:[460,280]},{from:"P", to:[300,470]}], runners:[{from:"H", to:"1B"}] }),
+      desc: "Any player not directly involved in a play should be moving to back something up.",
+      points: ["Outfielders back up the infield on throws in their direction", "Infielders back up neighboring bases when they're not part of the play", "If you're not sure what to do, get in line behind a base"]
+    },
+    {
+      tag: "Principle",
+      title: "Covering vs. backing up",
+      diagram: diagram({ highlight:["2B"], ball:{to:[375,362]}, moves:[{from:"2B", to:"1B"}], runners:[{from:"H", to:"1B"}], throw:{from:[375,362], to:"1B"} }),
+      desc: "There's a difference between the two, and both matter.",
+      points: ["Covering a base means standing on it, ready for a throw or a tag", "Backing up means standing behind a base or fielder in case the ball gets past", "Both jobs happen on almost every play &mdash; know which one is yours before the pitch"]
+    }
+  ]
+};
+
+/* ---------- Render ---------- */
+const TAB_ORDER = ["P","C","1B","2B","3B","SS","LF","CF","RF","RUNNING","CUTOFFS"];
+const tabsEl = document.getElementById('tabs');
+const contentEl = document.getElementById('content');
+const introTitle = document.getElementById('intro-title');
+const introText = document.getElementById('intro-text');
+
+function renderTab(key){
+  const d = DATA[key];
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+  introTitle.textContent = d.label;
+  introText.innerHTML = d.intro;
+  contentEl.innerHTML = `<div class="grid">${d.cards.map((c,i) => `
+    <div class="card">
+      <div class="card-diagram" data-tab="${key}" data-idx="${i}">${c.diagram}<span class="play-hint">&#9654; tap to animate</span></div>
+      <div class="card-body">
+        <span class="card-tag">${c.tag}</span>
+        <h3>${c.title}</h3>
+        <p class="desc">${c.desc}</p>
+        <ul>${c.points.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>
+    </div>`).join('')}</div>`;
+  try { localStorage.setItem('llp-tab', key); } catch(e){}
+}
+
+TAB_ORDER.forEach(key => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn';
+  btn.dataset.key = key;
+  btn.textContent = DATA[key].label;
+  btn.onclick = () => renderTab(key);
+  tabsEl.appendChild(btn);
+});
+
+contentEl.addEventListener('click', (e) => {
+  const dia = e.target.closest('.card-diagram');
+  if (!dia) return;
+  const tab = dia.dataset.tab, idx = +dia.dataset.idx;
+  const card = DATA[tab] && DATA[tab].cards[idx];
+  if (!card) return;
+  // re-insert fresh (unstarted) markup so a repeat tap restarts cleanly
+  dia.innerHTML = card.diagram + '<span class="play-hint">&#9654; tap to animate</span>';
+  const svg = dia.querySelector('svg');
+  requestAnimationFrame(() => {
+    // plays in order: the pitch/hit, then fielders covering/backing up + the runner,
+    // then (if present) a follow-up relay throw -- each phase waits for the one
+    // before it to finish so the sequence reads the way the play actually happens
+    const phases = ['ball', 'move', 'throw'];
+    let cumulativeMs = 0;
+    phases.forEach(phase => {
+      const els = svg.querySelectorAll(`[data-phase="${phase}"]`);
+      if (!els.length) return;
+      setTimeout(() => {
+        els.forEach(a => {
+          // reveal that phase's guide line right as it starts, instead of upfront
+          if (a.tagName.toLowerCase() === 'path'){
+            a.setAttribute('opacity', '1');
+          } else {
+            try { a.beginElement(); } catch(err){}
+          }
+        });
+      }, cumulativeMs);
+      let phaseDur = 0;
+      els.forEach(a => {
+        if (a.tagName.toLowerCase() === 'animatemotion'){
+          const secs = parseFloat(a.getAttribute('dur')) || 0;
+          phaseDur = Math.max(phaseDur, secs);
+        }
+      });
+      cumulativeMs += phaseDur * 1000;
+    });
+  });
+});
+
+let startKey = "P";
+try { const saved = localStorage.getItem('llp-tab'); if (saved && DATA[saved]) startKey = saved; } catch(e){}
+renderTab(startKey);
+</script>
+</body>
+</html>
