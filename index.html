@@ -110,12 +110,17 @@
     border: 1px solid var(--border);
     background: var(--chip-bg);
     color: var(--text);
-    padding: 7px 13px;
+    padding: 10px 16px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
     border-radius: 999px;
     font-size: 13.5px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .tab-btn:hover { border-color: var(--accent); }
   .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -155,6 +160,7 @@
     padding: 8px;
     position: relative;
     cursor: pointer;
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
   .card-diagram svg { display: block; width: 100%; height: auto; }
@@ -214,22 +220,28 @@
   }
   .quiz-select-label select {
     font: inherit;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text);
     background: var(--chip-bg);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 6px 10px;
+    padding: 9px 12px;
+    min-height: 40px;
+    touch-action: manipulation;
   }
   .quiz-btn {
     border: 1px solid var(--border);
     background: var(--chip-bg);
     color: var(--text);
-    padding: 8px 16px;
+    padding: 11px 18px;
+    min-height: 44px;
     border-radius: 999px;
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .quiz-btn:disabled { opacity: 0.45; cursor: default; }
   .quiz-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -239,7 +251,7 @@
     font-weight: 700;
     color: var(--text-dim);
   }
-  .quiz-card { max-width: 460px; }
+  .quiz-card { max-width: 460px; margin: 0 auto; }
   .quiz-diagram {
     background: var(--grass);
     padding: 8px;
@@ -254,6 +266,14 @@
   .quiz-result.correct { color: var(--accent); }
   .quiz-result.incorrect { color: var(--runner-path); }
   .quiz-actions { display: flex; gap: 10px; }
+  @media (max-width: 480px) {
+    .quiz-actions { flex-direction: column; }
+    .quiz-actions .quiz-btn { width: 100%; }
+    .quiz-controls { gap: 10px; }
+    .quiz-select-label { flex: 1 1 auto; }
+    .quiz-select-label select { flex: 1; }
+    .quiz-score { margin-left: 0; flex-basis: 100%; }
+  }
   footer {
     text-align: center;
     color: var(--text-dim);
@@ -987,9 +1007,13 @@ function quizStartSVG(q){
   for (const k of Object.keys(POS)){
     const [x,y] = POS[k];
     if (k === q.positionKey){
+      // r=40 invisible circle is the real touch/grab target -- on a phone the
+      // 600-unit viewBox is squeezed down to ~340px, so the visible r=16 circle
+      // alone would render as an ~18px dot, well under a usable finger target
       body += `<g class="quiz-drag" transform="translate(${x},${y})" style="cursor:grab;touch-action:none;">
-        <circle r="16" fill="var(--accent)" stroke="#ffffff" stroke-width="2.5"/>
-        <text y="4" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff" style="pointer-events:none">${k}</text>
+        <circle r="40" fill="transparent" style="pointer-events:all"/>
+        <circle r="17" fill="var(--accent)" stroke="#ffffff" stroke-width="3" style="pointer-events:none"/>
+        <text y="4" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff" style="pointer-events:none">${k}</text>
       </g>`;
     } else {
       body += `<circle cx="${x}" cy="${y}" r="11" fill="#ffffff" stroke="#3a3a3a" stroke-width="1.5" opacity="0.85"/>
