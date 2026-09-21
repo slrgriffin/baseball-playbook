@@ -94,6 +94,21 @@
   }
   .brand h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
   .brand span.sub { display: block; font-size: 12px; color: var(--text-dim); font-weight: 400; }
+  .header-quiz-btn {
+    flex-shrink: 0;
+    border: 1px solid var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 9px 16px;
+    min-height: 40px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .header-quiz-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
   .tabs {
     display: flex;
     gap: 6px;
@@ -282,6 +297,7 @@
   }
   @media (max-width: 480px) {
     .brand h1 { font-size: 15.5px; }
+    .header-quiz-btn { padding: 8px 13px; font-size: 12.5px; }
   }
 </style>
 </head>
@@ -307,9 +323,10 @@
       <div class="brand-mark">&#9918;</div>
       <div>
         <h1>Little League Playbook</h1>
-        <span class="sub">Where to go, what to do &mdash; every position, every play</span>
+        <span class="sub">Every position, every play</span>
       </div>
     </div>
+    <button id="header-quiz-btn" class="header-quiz-btn">Quiz</button>
   </div>
   <nav class="tabs" id="tabs"></nav>
 </header>
@@ -1124,7 +1141,8 @@ function checkQuizAnswer(){
 }
 
 function renderQuiz(){
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.key === 'QUIZ'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('header-quiz-btn').classList.add('active');
   introTitle.textContent = "Quiz Mode";
   introText.innerHTML = "Read the play, then drag the highlighted player to where they should end up. Close counts &mdash; you don't have to be exact.";
 
@@ -1168,7 +1186,7 @@ function renderQuiz(){
 }
 
 /* ---------- Render ---------- */
-const TAB_ORDER = ["P","C","1B","2B","3B","SS","LF","CF","RF","RUNNING","CUTOFFS","QUIZ"];
+const TAB_ORDER = ["P","C","1B","2B","3B","SS","LF","CF","RF","RUNNING","CUTOFFS"];
 const tabsEl = document.getElementById('tabs');
 const contentEl = document.getElementById('content');
 const introTitle = document.getElementById('intro-title');
@@ -1177,6 +1195,7 @@ const introText = document.getElementById('intro-text');
 function renderTab(key){
   const d = DATA[key];
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+  document.getElementById('header-quiz-btn').classList.remove('active');
   introTitle.textContent = d.label;
   introText.innerHTML = d.intro;
   contentEl.innerHTML = `<div class="grid">${d.cards.map((c,i) => `
@@ -1200,10 +1219,12 @@ TAB_ORDER.forEach(key => {
   const btn = document.createElement('button');
   btn.className = 'tab-btn';
   btn.dataset.key = key;
-  btn.textContent = key === 'QUIZ' ? 'Quiz' : DATA[key].label;
+  btn.textContent = DATA[key].label;
   btn.onclick = () => renderActive(key);
   tabsEl.appendChild(btn);
 });
+
+document.getElementById('header-quiz-btn').addEventListener('click', () => renderActive('QUIZ'));
 
 contentEl.addEventListener('click', (e) => {
   const dia = e.target.closest('.card-diagram');
